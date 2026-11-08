@@ -1,4 +1,12 @@
+import java.util.logging.Logger;
+
 public class Escorredor {
+
+//	private static Logger logger = Logger.getLogger(Class.class.getSimpleName());
+	
+	public Escorredor(){
+		
+	}
 	
 	FilaCircular fila = new FilaCircular(20);
 	
@@ -9,6 +17,7 @@ public class Escorredor {
 		}
 		
 		if(fila.isFull()) {
+//			logger.info("Fila está cheia");
 			throw new IllegalStateException("Fila está cheia"); // log com quant pratos
 		}
 		
@@ -22,6 +31,7 @@ public class Escorredor {
 		}
 		
 		if(fila.isEmpty()) {
+//			logger.info("Fila está vazia");
 			throw new IllegalStateException("Fila está vazia"); // log com quant pratos
 		}
 		

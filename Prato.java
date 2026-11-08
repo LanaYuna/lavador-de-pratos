@@ -6,11 +6,11 @@ public class Prato {
     private int contadorSerie = 0;
     
     public void prato(){
-        int sorteio = new Random().nextInt(100)+1;
+        int random = new Random().nextInt(100)+1;
         
-        if(sorteio <= 30) {
+        if(random <= 30) {
         	sujeira = Sujeira.BAIXO;
-        } else if(sorteio <= 60) {
+        } else if(random <= 60) {
         	sujeira = Sujeira.MEDIO;
         } else {
         	sujeira = Sujeira.ENGORDURADO;
@@ -23,7 +23,7 @@ public class Prato {
         return this.serie;
     }
     
-    public Sujeira gSujeira(){
+    public Sujeira getSujeira(){
         return this.sujeira;
     }
 }
