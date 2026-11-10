@@ -11,24 +11,33 @@ public class Lavador implements Runnable{
     	
     	while(!done) {
     		
-    		Prato prato = PratoFactory.criarPrato();
-    		
-    		if(prato.getSujeira() == Sujeira.BAIXO) {
-    			for(int i=0; i < 30000000; i++) {
-    				
-    			}
-    		} else if(prato.getSujeira() == Sujeira.MEDIO) {
-    			for(int i=0; i < 50000000; i++) {
-    				
-    			}
-    		} else {
-    			for(int i=0; i < 100000000; i++) {
-    				
-    			}
+    		try {
+	    		Prato prato = PratoFactory.criarPrato();
+	    		
+	    		int limite = 0;
+	    		
+	    		switch(prato.getSujeira()) {
+	    			case BAIXO:
+	    				limite = 30_000_000;
+	    				break;
+	    			case MEDIO:
+	    				limite = 50_000_000;
+	    				break;
+	    			case ENGORDURADO:
+	    				limite = 100_000_000;
+	    				break;
+	    		}
+	    		
+	    		for(int i=0; i < limite; i++) {
+	    			// LIMPANDO PRATO
+	    		}
+	    		
+	    		escorredor.colocarPrato(prato);
+	    		
+    		} catch(InterruptedException e) {
+    			Thread.currentThread().interrupt();
+    			break;
     		}
-    		
-    		escorredor.colocarPrato(prato);
-    		notify();   // colocar prato, notify() p/ enxugador
     	}
     
     }
@@ -37,4 +46,5 @@ public class Lavador implements Runnable{
     	this.done = true;
     }
     
+	// USAR INTERRUPT PARA ENCERRAMENTO
 }

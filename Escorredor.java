@@ -3,14 +3,13 @@ import java.util.logging.Logger;
 public class Escorredor {
 
 //	private static Logger logger = Logger.getLogger(Class.class.getSimpleName());
+	private FilaCircular fila;
 	
-	public Escorredor(){
-		
+	public Escorredor(int capacidade){
+		fila = new FilaCircular(capacidade);
 	}
 	
-	FilaCircular fila = new FilaCircular(20);
-	
-	public synchronized void colocarPrato(Prato prato) {
+	public synchronized void colocarPrato(Prato prato) throws InterruptedException{
 		
 		while(fila.isFull()) {
 			wait();
@@ -20,11 +19,12 @@ public class Escorredor {
 //			logger.info("Fila está cheia");
 			throw new IllegalStateException("Fila está cheia"); // log com quant pratos
 		}
-		
+
 		fila.enqueue(prato);
+		notify();   // notify() p/ enxugador
 	}
 	
-	public synchronized void tirarPrato() {
+	public synchronized Prato tirarPrato() throws InterruptedException {
 		
 		while(fila.isEmpty()) {
 			wait();
@@ -35,7 +35,10 @@ public class Escorredor {
 			throw new IllegalStateException("Fila está vazia"); // log com quant pratos
 		}
 		
-		fila.dequeue();
+		Prato prato = fila.dequeue();
+		notify();   // notify() p/ colocar prato novo (escorredor cheio)
+		
+		return prato;
 	}
 	
 }

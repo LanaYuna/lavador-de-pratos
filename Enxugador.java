@@ -13,17 +13,23 @@ public class Enxugador implements Runnable{
 	public void run() {
 		
 		while(!done) {
-			Prato prato = escorredor.tirarPrato();
 			
-			int random = new Random().nextInt();
+			try {
+				Prato prato = escorredor.tirarPrato();
+				
+				int random = new Random().nextInt();
 			
-			
-			notify(); // ao tirar prato, notify() p/ colocar prato novo (escorredor cheio)
+			} catch(InterruptedException e) {
+				Thread.currentThread().interrupt();
+				break;
+			}
 		}
 	}
 
 	public void parar() {
 		this.done = true;
 	}
+	
+	// USAR INTERRUPT PARA ENCERRAMENTO
 	
 }
