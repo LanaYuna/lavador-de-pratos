@@ -17,7 +17,11 @@ public class Enxugador implements Runnable{
 			try {
 				Prato prato = escorredor.tirarPrato();
 				
-				int random = new Random().nextInt();
+				int random = (new Random().nextInt(8) + 3) * 10_000_000;
+				
+				for(int i=0; i < random; i++) {
+					// ENXUGANDO PRATO
+				}
 			
 			} catch(InterruptedException e) {
 				Thread.currentThread().interrupt();

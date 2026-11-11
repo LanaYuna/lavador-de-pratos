@@ -1,22 +1,25 @@
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Prato {
-    private int serie;
-    private Sujeira sujeira;
-    private int contadorSerie = 0;
+    private static final AtomicInteger contadorSerie = new AtomicInteger(0);
+    private static final Random random = new Random();
+	
+    private final int serie;
+    private final Sujeira sujeira;
     
-    public void prato(){
-        int random = new Random().nextInt(100)+1;
+    public Prato(){
+        int sorteio = random.nextInt(100)+1;
         
-        if(random <= 30) {
+        if(sorteio <= 30) {
         	sujeira = Sujeira.BAIXO;
-        } else if(random <= 60) {
+        } else if(sorteio <= 90) {
         	sujeira = Sujeira.MEDIO;
         } else {
         	sujeira = Sujeira.ENGORDURADO;
         }
         
-        serie = this.contadorSerie++;
+        serie = contadorSerie.incrementAndGet();
     }
 
     public int getSerie(){
