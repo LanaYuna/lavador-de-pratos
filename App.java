@@ -1,44 +1,92 @@
+import java.util.logging.Logger;
+
 public class App {
-	static int max = 20;
 	
-	Escorredor escorredor;
-	Enxugador enxugador;
-	Lavador lavador;
-	
-	int quantEnxugadores;
-	int quantLavadores;
-	
-	public App() {
-		this.escorredor = new Escorredor(max);
-	}
+	private static final Logger logger = Logger.getLogger(Escorredor.class.getName());
 
-    public static void main(String[] args){
-    	
-    	App app = new App();
+    private static final int CAPACIDADE = 20;
 
-    	app.iniciar(2, 3);
-    	app.parar();
-    	
+    private final Escorredor escorredor;
+
+    private Lavador[] lavadores;
+    private Enxugador[] enxugadores;
+
+    private Thread[] threadsLavadores;
+    private Thread[] threadsEnxugadores;
+
+    public App() {
+        escorredor = new Escorredor(CAPACIDADE);
     }
-    
-    private void iniciar(int q1, int q2) {
-    	quantEnxugadores = q1;
-    	quantLavadores = q2;
-    	
-    	for(int i=0; i < quantEnxugadores; i++) {
-    		this.enxugador = new Enxugador(escorredor);
-    		new Thread(enxugador).start();
-    	}
-    	
-    	for(int i=0; i < quantLavadores; i++) {
-    		this.lavador = new Lavador(escorredor);
-    		new Thread(lavador).start();
-    	}
+
+    public static void main(String[] args) {
+
+        App app = new App();
+
+        try {
+            app.iniciar(2, 3);
+
+            Thread.sleep(10_000);
+
+            app.parar();
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
-    
-    private void parar() {
-    	enxugador.parar();
-		lavador.parar();
+
+    public void iniciar(int quantidadeEnxugadores, int quantidadeLavadores) {
+
+        if (quantidadeEnxugadores < 1 || quantidadeLavadores < 1) {
+            throw new IllegalArgumentException("É necessário ter pelo menos um lavador e um enxugador.");
+        }
+
+        lavadores = new Lavador[quantidadeLavadores];
+        enxugadores = new Enxugador[quantidadeEnxugadores];
+
+        threadsLavadores = new Thread[quantidadeLavadores];
+        threadsEnxugadores = new Thread[quantidadeEnxugadores];
+
+        for (int i = 0; i < quantidadeEnxugadores; i++) {
+
+            enxugadores[i] = new Enxugador(escorredor);
+
+            threadsEnxugadores[i] = new Thread(enxugadores[i], "Enxugador-" + (i + 1));
+
+            threadsEnxugadores[i].start();
+        }
+
+        for (int i = 0; i < quantidadeLavadores; i++) {
+
+            lavadores[i] = new Lavador(escorredor);
+
+            threadsLavadores[i] = new Thread(lavadores[i], "Lavador-" + (i + 1));
+
+            threadsLavadores[i].start();
+        }
+    }
+
+    public void parar() throws InterruptedException {
+
+        for (int i = 0; i < lavadores.length; i++) {
+            lavadores[i].parar();
+            threadsLavadores[i].interrupt(); // Interrompe uma espera bloqueante, como wait().
+        }
+
+        for (Thread thread : threadsLavadores) {
+            thread.join();
+        }
+
+        escorredor.aguardarConclusao();
+
+        for (int i = 0; i < enxugadores.length; i++) {
+            enxugadores[i].parar();
+            threadsEnxugadores[i].interrupt();
+        }
+
+        for (Thread thread : threadsEnxugadores) {
+            thread.join();
+        }
+        
+        logger.info("Fim do programa");
     }
 }
- 

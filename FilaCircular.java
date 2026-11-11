@@ -37,15 +37,6 @@ public class FilaCircular {
 		return elemento;
 	}
 	
-	public Prato peek() {
-		
-		if(isEmpty()) {
-			throw new IllegalStateException("Fila vazia");
-		}
-		
-		return fila[front];
-	}
-	
 	public boolean isEmpty() {
 		return quantidade == 0;
 	}
