@@ -24,9 +24,11 @@ public class Enxugador implements Runnable{
 				
 				int random = (new Random().nextInt(8) + 3) * 10_000_000;
 				
-				for(int i=0; i < random; i++) {
-					// ENXUGANDO PRATO
-				}
+				for(int i=0; i < random && !done && !Thread.currentThread().isInterrupted(); i++) {}
+				
+				if (done || Thread.currentThread().isInterrupted()) {
+             	    break;
+             	}
 				
 				logger.fine("Enxugador terminou de enxugar o prato " + prato.getSerie());
 

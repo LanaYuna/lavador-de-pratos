@@ -1,8 +1,10 @@
+import java.io.FileInputStream;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class App {
 	
-	private static final Logger logger = Logger.getLogger(Escorredor.class.getName());
+	private static final Logger logger = Logger.getLogger(App.class.getName());
 
     private static final int CAPACIDADE = 20;
 
@@ -19,13 +21,19 @@ public class App {
     }
 
     public static void main(String[] args) {
+    	
+    	 try {
+             LogManager.getLogManager().readConfiguration(new FileInputStream("logging.properties"));
+         } catch (Exception e) { 
+             e.printStackTrace();
+         }
 
         App app = new App();
 
         try {
-            app.iniciar(2, 3);
+            app.iniciar(5, 2);
 
-            Thread.sleep(10_000);
+            Thread.sleep(60_000);
 
             app.parar();
 
@@ -69,7 +77,7 @@ public class App {
 
         for (int i = 0; i < lavadores.length; i++) {
             lavadores[i].parar();
-            threadsLavadores[i].interrupt(); // Interrompe uma espera bloqueante, como wait().
+            threadsLavadores[i].interrupt();
         }
 
         for (Thread thread : threadsLavadores) {

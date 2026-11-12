@@ -14,7 +14,6 @@ public class Escorredor {
 
     public Escorredor(int capacidade) {
         fila = new FilaCircular(capacidade);
-        logger.info("Escorredor vazio. Quantidade: 0");
     }
 
     private synchronized boolean estaCheio() {
@@ -26,6 +25,8 @@ public class Escorredor {
     }
 
     public void colocarPrato(Prato prato) throws InterruptedException {
+    	
+    	boolean estavaVazio;
 
         synchronized (monitorLavador) {
 
@@ -33,30 +34,32 @@ public class Escorredor {
                 logger.fine("Lavador aguardando espaço no escorredor.");
                 monitorLavador.wait();
             }
+        }
 
-            boolean estavaVazio;
+        synchronized (this) {
+        	estavaVazio = fila.isEmpty();
 
-            synchronized (this) {
-                estavaVazio = fila.isEmpty();
+        	fila.enqueue(prato);
 
-                fila.enqueue(prato);
+        	logger.fine("Prato " + prato.getSerie() + " colocado. Quantidade: " + fila.size());
 
-                logger.fine("Prato " + prato.getSerie() + " colocado. Quantidade: " + fila.size());
+        	if (fila.isFull()) {
+        		logger.info("Escorredor cheio. Quantidade: " + fila.size());
+        	}
+        }
+        
 
-                if (fila.isFull()) {
-                    logger.info("Escorredor cheio. Quantidade: " + fila.size());
-                }
-            }
-
-            if (estavaVazio) {
-                synchronized (monitorEnxugador) {
-                    monitorEnxugador.notify();
-                }
+        if (estavaVazio) {
+            synchronized (monitorEnxugador) {
+                monitorEnxugador.notify();
             }
         }
     }
 
     public Prato tirarPrato() throws InterruptedException {
+    	
+    	boolean estavaCheio;
+    	Prato prato;
 
         synchronized (monitorEnxugador) {
 
@@ -64,40 +67,28 @@ public class Escorredor {
                 logger.fine("Enxugador aguardando prato.");
                 monitorEnxugador.wait();
             }
-
-            Prato prato;
-            boolean estavaCheio;
-
-            synchronized (this) {
-                estavaCheio = fila.isFull();
-
-                prato = fila.dequeue();
-                emProcessamento++;
-
-                logger.fine("Prato " + prato.getSerie()+ " retirado. Quantidade: " + fila.size());
-
-                if (fila.isEmpty()) {
-                    logger.info("Escorredor vazio. Quantidade: " + fila.size());
-                }
-            }
-
-            if (estavaCheio) {
-                synchronized (monitorLavador) {
-                    monitorLavador.notify();
-                }
-            }
-
-            return prato;
         }
-    }
-    
-    public void aguardarEspaco() throws InterruptedException {
-        synchronized (monitorLavador) {
-            while (estaCheio()) {
-                logger.fine("Lavador aguardando espaço.");
-                monitorLavador.wait();
+
+        synchronized (this) {
+        	estavaCheio = fila.isFull();
+
+        	prato = fila.dequeue();
+        	emProcessamento++;
+
+        	logger.fine("Prato " + prato.getSerie()+ " retirado. Quantidade: " + fila.size());
+
+        	if (fila.isEmpty()) {
+        		logger.info("Escorredor vazio. Quantidade: " + fila.size());
+        	}
+        }
+            
+        if (estavaCheio) {
+            synchronized (monitorLavador) {
+                monitorLavador.notify();
             }
         }
+        
+        return prato;
     }
 
     public void pratoEnxugado() {
@@ -117,20 +108,18 @@ public class Escorredor {
     }
 
     public void aguardarConclusao() throws InterruptedException {
-
+    	
         synchronized (monitorConclusao) {
-
             while (true) {
-
                 synchronized (this) {
                     if (fila.isEmpty() && emProcessamento == 0) {
                         return;
                     }
                 }
-
                 monitorConclusao.wait();
-            }
+           }
         }
+        
     }
  
 }

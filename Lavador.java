@@ -16,11 +16,6 @@ public class Lavador implements Runnable{
     	   while (!done && !Thread.currentThread().isInterrupted()) {
 
                try {
-                   escorredor.aguardarEspaco();
-
-                   if (done || Thread.currentThread().isInterrupted()) {
-                       break;
-                   }
 
                    Prato prato = PratoFactory.criarPrato();
 
@@ -45,16 +40,13 @@ public class Lavador implements Runnable{
                            throw new IllegalStateException("Nível de sujeira desconhecido");
                    }
 
-                   for (long i = 0; i < limite && !done; i++) {
-                       // LAVANDO PRATO
-                   }
-
+                   for (int i = 0; i < limite && !done && !Thread.currentThread().isInterrupted(); i++) {}
+                   
                    if (done || Thread.currentThread().isInterrupted()) {
-                       break;
+                	    break;
                    }
 
-                   logger.fine("Lavador terminou de lavar o prato "
-                           + prato.getSerie());
+                   logger.fine("Lavador terminou de lavar o prato "+ prato.getSerie());
 
                    escorredor.colocarPrato(prato);
 

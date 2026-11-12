@@ -32,7 +32,7 @@ public class FilaCircular {
 		
 		Prato elemento = fila[front];
 		front = (front + 1) % fila.length;
-		quantidade --;
+		quantidade--;
 		
 		return elemento;
 	}
